@@ -5,7 +5,7 @@
 .lang-picker{display:flex;align-items:center;gap:4px}.lang-picker label{font-size:14px;color:#75867d}.lang-picker select{max-width:80px;border:0;background:transparent;border-radius:4px;padding:3px 1px;color:#64756c;font-size:12px;font-weight:500;cursor:pointer;outline-offset:3px}@media(max-width:480px){.nav small{display:none}.logo{font-size:21px}}
 .offer-timer{border:1px solid #e8d7b8;background:#fff9ed;border-radius:14px;padding:15px;margin:18px 0;text-align:center}.offer-timer strong{color:#8d4b23;font-size:12px;letter-spacing:.07em}.clock-units{display:flex;justify-content:center;gap:8px;margin:12px 0 3px}.clock-unit{background:var(--green);color:white;border-radius:8px;padding:9px 12px;min-width:65px;font-size:23px;font-weight:800;font-variant-numeric:tabular-nums}.clock-unit small{display:block;font-size:9px;font-weight:500;letter-spacing:.07em}.offer-timer p{font-size:12px;color:#735e47;margin:7px 0 0}
 .discount-overlay{position:fixed;inset:0;background:rgba(13,30,25,.58);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}.discount-overlay.open{display:flex}.discount-modal{position:relative;width:min(100%,430px);background:#fff;border-radius:22px;padding:34px 26px;text-align:center;box-shadow:0 24px 75px #0004}.discount-modal h2{font-size:34px;margin:12px 0}.discount-modal p{color:#586a60}.discount-close{position:absolute;right:12px;top:10px;background:transparent;border:0;font-size:25px;color:#53665c}.coupon{border:2px dashed #93b2a1;border-radius:12px;background:#f1f7f2;padding:14px;font-size:24px;font-weight:800;letter-spacing:.1em;color:var(--green)}.coupon-action{width:100%;border:0;border-radius:10px;padding:14px;background:var(--green);color:white;font-weight:700;margin-top:12px}.discount-modal small{display:block;margin-top:12px;color:#68766d}
-.sales-toast{position:fixed;left:16px;bottom:18px;z-index:800;max-width:min(330px,calc(100vw - 32px));background:white;color:#183f36;border:1px solid #dce7df;box-shadow:0 8px 26px #0002;border-radius:12px;padding:13px 38px 13px 15px;opacity:0;transform:translateY(15px);pointer-events:none;transition:opacity .3s,transform .3s}.sales-toast.show{opacity:1;transform:translateY(0);pointer-events:auto}.sales-toast strong{font-size:13px}.sales-toast p{font-size:12px;margin:4px 0;color:#5c6c62}.sales-toast small{font-size:10px;color:#748278}.sales-toast button{position:absolute;right:9px;top:7px;background:none;border:0;color:#6d7971;font-size:20px}
+.sales-toast{position:fixed;left:20px;bottom:24px;z-index:800;width:min(390px,calc(100vw - 32px));background:#fff;color:#163f38;border:2px solid #79aa8c;border-left:7px solid #28734d;box-shadow:0 15px 44px #0004;border-radius:16px;padding:20px 42px 20px 20px;opacity:0;transform:translateY(18px);pointer-events:none;transition:opacity .35s,transform .35s}.sales-toast.show{opacity:1;transform:translateY(0);pointer-events:auto}.sales-toast strong{font-size:17px;font-weight:800}.sales-toast p{font-size:14px;margin:8px 0;color:#365a45;font-weight:600}.sales-toast small{font-size:11px;color:#66786c}.sales-toast button{position:absolute;right:9px;top:7px;background:none;border:0;color:#6d7971;font-size:20px}
 .product-hero{padding:12px;background:#fff;min-height:0}.product-hero img{width:100%;height:auto;display:block;object-fit:contain;border-radius:16px}.product-caption{font-size:11px;color:#64736b;margin:5px 0 0}
 </style></head>
 <body><div class="notice"><span data-i18n="0">PROTOTIPO DIMOSTRATIVO · Marchio, prodotto, prezzi e offerte provvisori · Nessun acquisto reale</span></div>
@@ -61,7 +61,7 @@ document.getElementById("coupon-copy").addEventListener("click",async()=>{
  try{await navigator.clipboard.writeText(code);document.getElementById("coupon-copy").textContent=discountTranslations[popupLocale()][3];}
  catch(e){document.getElementById("coupon-code").focus();document.getElementById("discount-note").textContent=code;}
 });
-setTimeout(()=>{if(!sessionStorage.getItem("novabyte-discount-seen")){sessionStorage.setItem("novabyte-discount-seen","1");refreshDiscount();previousFocus=document.activeElement;overlay.classList.add("open");closeDiscount.focus();}},10000);
+setTimeout(()=>{{refreshDiscount();previousFocus=document.activeElement;overlay.classList.add("open");closeDiscount.focus();}},10000);
 
 // Illustrative market-demand notice, not a fabricated live purchase.
 // Replace the example figure with a verified source before publishing.
@@ -75,5 +75,8 @@ let salesDismissed=false;
 function translateSales(){const t=salesCopy[document.getElementById("language").value];document.getElementById("sales-toast-title").textContent=t[0];document.getElementById("sales-toast-body").textContent=t[1];document.getElementById("sales-toast-disclaimer").textContent=t[2];}
 document.getElementById("language").addEventListener("change",translateSales);
 document.getElementById("sales-toast-close").addEventListener("click",()=>{salesDismissed=true;salesToast.classList.remove("show");});
-setTimeout(()=>{if(!salesDismissed&&!overlay.classList.contains("open")){translateSales();salesToast.classList.add("show");setTimeout(()=>salesToast.classList.remove("show"),5500);}},18000);
+function showSalesToast(){if(salesDismissed||overlay.classList.contains("open"))return;translateSales();salesToast.classList.add("show");setTimeout(()=>salesToast.classList.remove("show"),11000);}
+setTimeout(showSalesToast,16000);
+closeDiscount.addEventListener("click",()=>setTimeout(showSalesToast,600));
+
 </script></body></html>
