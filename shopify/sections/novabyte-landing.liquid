@@ -29,8 +29,9 @@ Media currently loads from the existing GitHub Pages assets.
 <main><section class="wrap main-video" aria-labelledby="main-video-title"><p class="eyebrow">Beauty Stick Pro W775</p><h1 id="main-video-title">{{ section.settings.title | escape }}</h1><p class="conversion-intro">Scopri da vicino il dispositivo, guarda le dimostrazioni e <strong>valuta la tua nuova routine viso</strong> prima di acquistare.</p>{% if section.settings.featured_video != blank %}<div class="novabyte-featured-video">{{ section.settings.featured_video | video_tag: controls: true, autoplay: false, loop: false, muted: false, playsinline: true, image_size: '900x' }}</div>{% else %}<video id="main-product-video" controls autoplay muted loop playsinline preload="auto" poster="https://luandersonjesussantos063-eng.github.io/novabyte-shopify-landing/assets/beauty-stick-pro-main-trimmed.jpg" aria-label="Beauty Stick Pro — Video principale"><source src="https://luandersonjesussantos063-eng.github.io/novabyte-shopify-landing/assets/beauty-stick-pro-main-trimmed.mp4" type="video/mp4"><a href="https://luandersonjesussantos063-eng.github.io/novabyte-shopify-landing/assets/beauty-stick-pro-main-trimmed.mp4">Guarda il video</a></video>{% endif %}</section><section class="wrap hero"><div class="visual product-hero"><img src="https://luandersonjesussantos063-eng.github.io/novabyte-shopify-landing/assets/beauty-stick-pro-kit.webp" alt="Beauty Stick Pro con confezione e accessori" width="1536" height="1024" fetchpriority="high"></div><div><div class="stars"><span class="muted">Scopri il prodotto e valuta ogni dettaglio</span></div><p class="eyebrow"><span data-i18n="3">Scopri la novità</span></p><h1><span data-i18n="4">Fino al 99% delle macchie eliminate*</span></h1><p class="muted"><span data-i18n="5">Scopri Beauty Stick Pro W775 e il trattamento presentato dal produttore per le macchie cutanee. *Percentuale dichiarata dal produttore sulla base della propria documentazione; i risultati possono variare.</span></p><div class="perks"><div><span data-i18n="7">✓ Informazioni di spedizione chiare</span></div><div><span data-i18n="8">✓ Checkout sicuro tramite Shopify</span></div><div><span data-i18n="9">✓ Assistenza e condizioni trasparenti</span></div></div>{% assign landing_product = section.settings.product %} {% if landing_product == blank %}{% assign landing_product = all_products['beauty-stick-pro-w775-trattamento-viso'] %}{% endif %}
 {% if landing_product != blank %}
 {% assign landing_variant = landing_product.selected_or_first_available_variant %}
-<p class="price"><span style="text-decoration:line-through;font-size:.55em;color:#67766d">{{ landing_variant.price | money }}</span> <span>{{ landing_variant.price | times: 0.3 | money }}</span></p>
-<p style="font-size:13px;color:#54645a;margin-top:0">Prezzo con codice BENVENUTO70 (70% di sconto). Pagamento alla consegna disponibile se abilitato al checkout.</p>
+<p class="price" aria-live="polite"><span id="novabyte-original-price">{{ landing_variant.price | money }}</span><span id="novabyte-coupon-price" hidden>{{ landing_variant.price | times: 0.3 | money }}</span></p>
+<p id="novabyte-coupon-status" style="font-size:13px;color:#54645a;margin-top:0">Inserisci il codice BENVENUTO70 per visualizzare il prezzo promozionale. Il prezzo definitivo sarà confermato nel modulo d’ordine.</p>
+<button type="button" class="coupon-action" id="novabyte-apply-coupon">APPLICA BENVENUTO70</button>
 <a class="buy" style="display:block;text-align:center;text-decoration:none" href="{{ landing_product.url }}">ORDINA ORA — PAGA ALLA CONSEGNA</a>
 {% elsif request.design_mode %}
 <p>Selecione o produto nas configurações desta seção para conectar a compra.</p>
@@ -104,6 +105,18 @@ const byId=id=>root.querySelector('[id="'+id+'"]');
 
 root.querySelectorAll('[data-scroll-buy]').forEach(b=>b.addEventListener('click',()=>root.querySelector('.hero').scrollIntoView({behavior:'smooth'})));
 
+// Coupon preview on the landing page. Does not change Shopify/Releasit order totals.
+const applyCoupon=byId("novabyte-apply-coupon");
+function showCouponPreview(){
+ const original=byId("novabyte-original-price"),discounted=byId("novabyte-coupon-price");
+ if(!original||!discounted)return;
+ original.style.textDecoration="line-through";original.style.fontSize=".55em";original.style.color="#67766d";
+ discounted.hidden=false;
+ byId("novabyte-coupon-status").textContent="Codice BENVENUTO70 selezionato. Verifica che il modulo d’ordine confermi lo stesso importo prima di completare l’acquisto.";
+ if(applyCoupon){applyCoupon.textContent="CODICE SELEZIONATO";applyCoupon.disabled=true;}
+}
+if(applyCoupon)applyCoupon.addEventListener("click",showCouponPreview);
+
 // Show a non-blocking offer after 10 seconds, once per browser tab session.
 // This is a prototype coupon: Shopify discount must be created before promising a real discount.
 const discountTranslations={
@@ -122,7 +135,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&overlay.classList.c
 byId("language").addEventListener("change",refreshDiscount);
 byId("coupon-copy").addEventListener("click",async()=>{
  const code=byId("coupon-code").textContent;
- try{await navigator.clipboard.writeText(code);byId("coupon-copy").textContent=discountTranslations[popupLocale()][3];}
+ try{await navigator.clipboard.writeText(code);byId("coupon-copy").textContent=discountTranslations[popupLocale()][3];showCouponPreview();dismissDiscount();}
  catch(e){byId("coupon-code").focus();byId("discount-note").textContent=code;}
 });
 setTimeout(()=>{refreshDiscount();previousFocus=document.activeElement;overlay.classList.add("open");closeDiscount.focus();},10000);
