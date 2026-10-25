@@ -31,7 +31,7 @@ Media currently loads from the existing GitHub Pages assets.
 {% assign landing_variant = landing_product.selected_or_first_available_variant %}
 <p class="price"><span style="text-decoration:line-through;font-size:.55em;color:#67766d">{{ landing_variant.price | money }}</span> <span>{{ landing_variant.price | times: 0.3 | money }}</span></p>
 <p style="font-size:13px;color:#54645a;margin-top:0">Prezzo con codice BENVENUTO70 (70% di sconto). Pagamento alla consegna disponibile se abilitato al checkout.</p>
-<a class="buy" style="display:block;text-align:center;text-decoration:none" href="/cart/{{ landing_variant.id }}:1?discount=BENVENUTO70">ORDINA ORA — APPLICA IL 70%</a>
+<a class="buy" style="display:block;text-align:center;text-decoration:none" href="{{ landing_product.url }}">ORDINA ORA — PAGA ALLA CONSEGNA</a>
 {% elsif request.design_mode %}
 <p>Selecione o produto nas configurações desta seção para conectar a compra.</p>
 {% endif %}</div></section>
